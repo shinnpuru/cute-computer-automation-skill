@@ -1,0 +1,25 @@
+[project]
+name = "simple-automation-mcp"
+version = "0.1.0"
+description = "MCP server for local and Android GUI automation"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "fastmcp",
+    "pyautogui",
+    "adbutils",
+    "pillow",
+]
+
+[project.scripts]
+simple-automation-mcp = "cute-mcp:mcp.run"
+
+[tool.uv]
+package = true
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["."]
