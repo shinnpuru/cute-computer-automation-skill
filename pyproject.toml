@@ -1,5 +1,5 @@
 [project]
-name = "simple-automation-mcp"
+name = "cute_mcp"
 version = "0.1.0"
 description = "MCP server for local and Android GUI automation"
 readme = "README.md"
@@ -9,10 +9,14 @@ dependencies = [
     "pyautogui",
     "adbutils",
     "pillow",
+    "uiautomator2",
+    "uiautomation; sys_platform == 'win32'",
+    "atomacos; sys_platform == 'darwin'",
+    "dogtail; sys_platform == 'linux'",
 ]
 
 [project.scripts]
-simple-automation-mcp = "cute-mcp:mcp.run"
+cute_mcp = "cute_mcp:mcp.run"
 
 [tool.uv]
 package = true

@@ -38,9 +38,9 @@ To use this server with Claude Desktop or Gemini, add the following to your `con
       "command": "uv",
       "args": [
         "--directory",
-        "/path/to/cute-mcp",
+        "/path/to/cute_mcp",
         "run",
-        "cute-mcp.py"
+        "cute_mcp.py"
       ]
     }
   }
@@ -54,10 +54,10 @@ To use this server with Claude Desktop or Gemini, add the following to your `con
 1. Open **Cursor Settings**.
 2. Navigate to **Features > MCP**.
 3. Click **+ Add New MCP Server**.
-4. Set the name to `cute-mcp`.
+4. Set the name to `cute_mcp`.
 5. Set the type to `command`.
 6. Paste the following command:
-   `uv --directory /path/to/cute-mcp run cute-mcp.py`
+   `uv --directory /path/to/cute_mcp run cute_mcp.py`
 </details>
 
 
