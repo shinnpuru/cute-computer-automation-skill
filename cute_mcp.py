@@ -48,7 +48,7 @@ def select_device(serial: str = None):
     current_adb_serial = serial
     return f"Active device set to: {serial or 'Local Machine'}"
 
-# --- Unified Interaction Functions ---
+# --- Interaction Functions ---
 
 @mcp.tool()
 def mouse_move(x: int, y: int, duration: float = 0.1):
