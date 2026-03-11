@@ -1,11 +1,10 @@
 [project]
 name = "cute_mcp"
 version = "0.1.0"
-description = "MCP server for local and Android GUI automation"
+description = "Claude Agent Skill for local and Android GUI automation"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "fastmcp",
     "pyautogui",
     "adbutils",
     "pillow",
@@ -15,15 +14,9 @@ dependencies = [
     "dogtail; sys_platform == 'linux'",
 ]
 
-[project.scripts]
-cute_mcp = "cute_mcp:mcp.run"
-
 [tool.uv]
-package = true
+package = false
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
-
-[tool.hatch.build.targets.wheel]
-packages = ["."]

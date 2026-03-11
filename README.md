@@ -1,90 +1,261 @@
-# CUTE-MCP: Computer Use AutomaTEd
+# Cute (CompUTEr automation) Skill Deployment Guide
 
-This project implements a [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server that provides tools for automating GUI interactions on both local machines and Android devices via ADB.
+This repository is an OpenClaw Agent Skill for GUI automation on the local computer and on Android devices connected through ADB.
 
-## Features
+This README is written as an execution manual so that both humans and coding agents can deploy it without guessing.
 
-- **Multi-Platform Support**: Works on Windows, macOS, and Linux.
-- **Local GUI Control**: Move mouse, click, drag, type text, and take screenshots.
-- **Android Control**: Tap, swipe, type, and take screenshots on connected Android devices`.
-- **Accessibility(a11y) Tree Support**: Extract UI hierarchies to identify elements, significantly saving tokens and improving accuracy.
-- **Device Management**: List and select specific ADB devices.
+## Goal
 
-## Supported Platforms
+Deploy this repository as an OpenClaw Skill named `cute-automation`, then verify that OpenClaw can discover and use it.
 
-- **Windows**: Full support for GUI automation and app management.
-- **macOS**: Full support for GUI automation and app management.
-- **Linux**: Support for GUI automation and app management (requires `xdg-utils`).
-- **Android**: Support via ADB for any connected device with USB debugging enabled.
+## Download source
+
+Download the package from GitHub Releases instead of copying a local repository checkout.
+
+- Latest release page: `https://github.com/shinnpuru/cute-mcp/releases/latest`
+
+Human workflow:
+
+1. open the latest release page
+2. download the newest release zip asset or source zip
+3. extract it into a temporary directory
+
+Agent workflow:
+
+1. resolve `https://github.com/shinnpuru/cute-mcp/releases/latest`
+2. download the newest release archive
+3. extract it into a temporary working directory
+
+Expected result:
+
+- the extracted directory contains `SKILL.md`, `skill_runtime.py`, `scripts/`, and `pyproject.toml`
+
+## Skill contents
+
+Required runtime files:
+
+```text
+SKILL.md
+skill_runtime.py
+scripts/
+    adb_list_devices.py
+    click.py
+    drag_or_swipe.py
+    get_a11y_tree.py
+    list_apps.py
+    mouse_move.py
+    press_key.py
+    run_app.py
+    select_device.py
+    take_screenshot.py
+    type_text.py
+    wait.py
+pyproject.toml
+```
 
 ## Prerequisites
 
-- Python 3.10+
-- [uv](https://github.com/astral-sh/uv) (recommended)
-- For Android control: ADB installed and devices connected with USB debugging enabled.
+Install these before deploying:
 
-## Steps to Automate
+- Python `3.10+`
+- `uv` recommended
+- `adb` only if Android automation is needed
+- OpenClaw with Skill discovery enabled
 
-1. **Start the Server**: Set the MCP command in your agent system as follows. Also ensure your ADB device is connected and in debugging mode if you plan to use Android tools.
+## Deployment options
 
-<details>
-<summary><b>Using with Claude Desktop or Gemini</b></summary>
+Choose one location:
 
-To use this server with Claude Desktop or Gemini, add the following to your `config.json`: 
+### Option A: Personal skill
 
-```json
-{
-  "mcpServers": {
-    "cute_mcp": {
-      "command": "uv",
-      "args": [
-        "--directory",
-        "/path/to/cute_mcp",
-        "run",
-        "cute_mcp.py"
-      ]
-    }
-  }
-}
+Use this when the skill should be available in all projects for the current user.
+
+- Target directory: `~/.openclaw/skills/cute-automation/`
+
+### Option B: Project skill
+
+Use this when the skill should be available only inside one repository.
+
+- Target directory: `.openclaw/skills/cute-automation/`
+
+## Deployment procedure
+
+### Step 1: Copy extracted files into the skill directory
+
+Requirement:
+
+- the final directory itself must contain `SKILL.md` at its root
+
+Correct result:
+
+```text
+<skill-dir>/
+├── SKILL.md
+├── skill_runtime.py
+├── scripts/
+└── pyproject.toml
 ```
-</details>
 
-<details>
-<summary><b>Using with Cursor or Cherry Studio</b></summary>
+Windows example for personal install:
 
-1. Open **MCP Settings**.
-2. Click **+ Add New MCP Server**.
-3. Set the name to `cute_mcp`.
-4. Set the type to `stdio`.
-5. Paste the following command:
-   `uv --directory /path/to/cute_mcp run cute_mcp.py`
-</details>
+```powershell
+$source = "<extracted-release-directory>"
+$target = Join-Path $HOME ".openclaw/skills/cute-automation"
+New-Item -ItemType Directory -Force -Path $target | Out-Null
+Copy-Item -Path "$source\*" -Destination $target -Recurse -Force
+```
 
-2. **Local Action**: "Use cute mcp to move the mouse to the Windows button and right-click."
-3. **Android Action**: "Use cute mcp to list my ADB devices, select the first one, and press the Home button."
+Unix example for personal install:
 
+```bash
+source_dir="<extracted-release-directory>"
+target_dir="$HOME/.openclaw/skills/cute-automation"
+mkdir -p "$target_dir"
+cp -R "$source_dir"/* "$target_dir"/
+```
 
-## Available Tools
+Project-local example:
 
-### Device Management
-- `adb_list_devices`: List all connected ADB devices.
-- `select_device`: Switch the active device. Pass a serial for ADB, or `null` for local machine.
+```powershell
+$source = "<extracted-release-directory>"
+$target = "<repo>\.openclaw\skills\cute-automation"
+New-Item -ItemType Directory -Force -Path $target | Out-Null
+Copy-Item -Path "$source\*" -Destination $target -Recurse -Force
+```
 
-### Interaction Functions
-These tools work on both the local machine and the selected ADB device.
+Unix project-local example:
 
-- `mouse_move`: Move the mouse cursor (Local only).
-- `click`: Click or Tap at (x, y).
-- `drag_or_swipe`: Drag (Local) or Swipe (ADB) from (x1, y1) to (x2, y2).
-- `type_text`: Type text on the active device.
-- `press_key`: Press a specific key or keyevent (e.g., 'ENTER', 'HOME').
+```bash
+source_dir="<extracted-release-directory>"
+target_dir="<repo>/.openclaw/skills/cute-automation"
+mkdir -p "$target_dir"
+cp -R "$source_dir"/* "$target_dir"/
+```
 
-### App Functions
+### Step 2: Install Python dependencies
 
-- `list_apps`: List installed applications.
-- `run_app`: Start an application by its ID or name.
+Run inside the deployed skill directory:
 
-### Vision Functions
+```bash
+uv sync
+```
 
-- `get_a11y_tree`: Get the accessibility tree of the current screen (Android, Windows, macOS, or Linux).
-- `take_screenshot`: Capture a screenshot and return the image with its dimensions.
+Windows PowerShell (recommended before `uv` commands):
+
+```powershell
+$env:PYTHONUTF8='1'
+uv sync
+```
+
+Expected outcome:
+
+- `pyautogui`, `adbutils`, `uiautomator2`, and platform-specific packages become importable
+
+### Step 3: Verify the skill files are complete
+
+Check these conditions:
+
+- `SKILL.md` exists
+- `scripts/select_device.py` exists
+- `scripts/get_a11y_tree.py` exists
+- `skill_runtime.py` exists
+- `pyproject.toml` exists
+
+If any of the files above are missing, deployment is incomplete.
+
+### Step 4: Verify the Python scripts run
+
+Run these commands from the skill directory:
+
+```bash
+uv run python scripts/select_device.py --serial local
+uv run python scripts/wait.py 0
+```
+
+Windows PowerShell example:
+
+```powershell
+$env:PYTHONUTF8='1'
+uv run python scripts/select_device.py --serial local
+uv run python scripts/wait.py 0
+```
+
+Expected output pattern:
+
+- `Active target: local`
+- `Waited 0.00s`
+
+### Step 5: Verify OpenClaw can see the skill
+
+In OpenClaw, use either of these checks:
+
+- ask: `What skills are available?`
+- invoke directly: `/cute-automation`
+
+Expected outcome:
+
+- OpenClaw lists or recognizes the `cute-automation` skill
+
+If OpenClaw does not see it:
+
+1. confirm the directory name is `cute-automation`
+2. confirm `SKILL.md` is at the skill root, not nested one level deeper
+3. restart OpenClaw or refresh the session
+4. verify the skill is in either `~/.openclaw/skills/` or `.openclaw/skills/`
+
+## Standard runtime pattern for agents
+
+When the skill is active, use this operating order:
+
+1. select target device
+2. inspect UI tree
+3. take screenshot if needed
+4. perform one action
+5. wait at least one second
+6. re-check state before the next action
+
+## Canonical commands
+
+Use `${OPENCLAW_SKILL_DIR}` when the skill is invoked by OpenClaw.
+
+### Local machine
+
+```bash
+uv --directory "${OPENCLAW_SKILL_DIR}" run python "${OPENCLAW_SKILL_DIR}/scripts/select_device.py" --serial local
+uv --directory "${OPENCLAW_SKILL_DIR}" run python "${OPENCLAW_SKILL_DIR}/scripts/get_a11y_tree.py"
+uv --directory "${OPENCLAW_SKILL_DIR}" run python "${OPENCLAW_SKILL_DIR}/scripts/click.py" --x 400 --y 300
+uv --directory "${OPENCLAW_SKILL_DIR}" run python "${OPENCLAW_SKILL_DIR}/scripts/wait.py" 1
+```
+
+### Android
+
+```bash
+uv --directory "${OPENCLAW_SKILL_DIR}" run python "${OPENCLAW_SKILL_DIR}/scripts/adb_list_devices.py"
+uv --directory "${OPENCLAW_SKILL_DIR}" run python "${OPENCLAW_SKILL_DIR}/scripts/select_device.py" --serial <adb-serial>
+uv --directory "${OPENCLAW_SKILL_DIR}" run python "${OPENCLAW_SKILL_DIR}/scripts/get_a11y_tree.py"
+uv --directory "${OPENCLAW_SKILL_DIR}" run python "${OPENCLAW_SKILL_DIR}/scripts/press_key.py" home
+```
+
+## Agent-readable deployment checklist
+
+An agent can follow this checklist exactly:
+
+1. open the latest release page
+2. download the newest release archive
+3. extract it to a temporary directory
+4. choose install scope: personal or project
+5. create target directory named `cute-automation`
+6. copy extracted files into that directory
+7. ensure `SKILL.md` is at the copied root
+8. run `uv sync` in the copied directory
+9. run `uv run python scripts/select_device.py --serial local`
+10. run `uv run python scripts/wait.py 0`
+11. confirm expected outputs appear
+12. start OpenClaw and verify `/cute-automation` is available
+
+## Notes
+
+- `skill_runtime.py` stores the selected ADB device in `.cute_skill_state.json`
+- screenshots are written to `screenshots/`
+- both of those paths are safe to ignore in version control
+- the detailed runtime instructions for the agent remain in `SKILL.md`

@@ -11,3 +11,6 @@ build/
 dist/
 *.egg-info/
 .eggs/
+.cute_skill_state.json
+screenshots/
+uv.lock
