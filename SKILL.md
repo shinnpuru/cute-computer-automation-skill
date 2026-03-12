@@ -28,7 +28,7 @@ This directory is a Claude Agent Skill. It replaces the old FastMCP server with 
 - `scripts/list_apps.py`: list apps for the active target.
 - `scripts/run_app.py`: launch a local app or Android package.
 - `scripts/get_a11y_tree.py`: dump the accessibility/UI tree. Supports `--depth` and `--scope` options to filter results.
-- `scripts/take_screenshot.py`: save a screenshot under `screenshots/`.
+- `scripts/take_screenshot.py`: save a screenshot under `screenshots/`. Supports `--ocr` flag for text recognition using EasyOCR.
 - `scripts/wait.py`: sleep between GUI actions.
 
 ## Operating rules
@@ -68,6 +68,31 @@ uv --directory "${CLAUDE_SKILL_DIR}" run python "${CLAUDE_SKILL_DIR}/scripts/sel
 uv --directory "${CLAUDE_SKILL_DIR}" run python "${CLAUDE_SKILL_DIR}/scripts/get_a11y_tree.py"
 uv --directory "${CLAUDE_SKILL_DIR}" run python "${CLAUDE_SKILL_DIR}/scripts/press_key.py" home
 ```
+
+## OCR Text Recognition (Optional)
+
+The `take_screenshot.py` script supports OCR text recognition using EasyOCR.
+
+**Prerequisites:**
+```bash
+uv pip install easyocr
+```
+
+Or install with the ocr extra:
+```bash
+uv sync --extra ocr
+```
+
+**Usage:**
+```bash
+# Take screenshot with OCR
+python scripts/take_screenshot.py --ocr
+```
+
+The OCR result will include:
+- Screenshot file path
+- Recognized text with confidence scores
+- Support for Chinese and English text
 
 ## Accessibility Tree Scope Filtering
 

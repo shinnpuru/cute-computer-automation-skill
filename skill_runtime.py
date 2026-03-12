@@ -438,7 +438,7 @@ def get_a11y_tree(max_depth: int | None = None, scope: str | None = None) -> str
     raise RuntimeError(f"Accessibility tree retrieval is not supported on {sys.platform}")
 
 
-def take_screenshot() -> str:
+def take_screenshot(ocr: bool = False) -> str:
     device = get_adb_device()
     if device:
         image = device.screenshot()
@@ -451,7 +451,32 @@ def take_screenshot() -> str:
     filename = SCREENSHOT_DIR / f"screenshot_{timestamp}.png"
     image.save(filename)
     width, height = image.size
-    return f"Saved screenshot to {filename} ({width}x{height})"
+    
+    result = f"Saved screenshot to {filename} ({width}x{height})"
+    
+    if ocr:
+        try:
+            import easyocr
+            # Initialize EasyOCR reader (support Chinese and English)
+            reader = easyocr.Reader(['ch_sim', 'en'], gpu=False, verbose=False)
+            ocr_result = reader.readtext(str(filename))
+            
+            texts = []
+            for detection in ocr_result:
+                text = detection[1]  # Extract text content
+                confidence = detection[2]  # Extract confidence
+                texts.append(f"{text} (置信度: {confidence:.2f})")
+            
+            if texts:
+                result += "\n\nOCR 识别结果:\n" + "\n".join(texts)
+            else:
+                result += "\n\nOCR 识别结果: 未检测到文字"
+        except ImportError:
+            result += "\n\nOCR 识别失败: 请先安装 easyocr (pip install easyocr)"
+        except Exception as e:
+            result += f"\n\nOCR 识别失败: {e}"
+    
+    return result
 
 
 def wait(seconds: float) -> str:
