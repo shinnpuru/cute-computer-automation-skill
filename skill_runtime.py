@@ -463,12 +463,23 @@ def take_screenshot(ocr: bool = False) -> str:
             
             texts = []
             for detection in ocr_result:
+                bbox = detection[0]  # Bounding box coordinates
                 text = detection[1]  # Extract text content
                 confidence = detection[2]  # Extract confidence
-                texts.append(f"{text} (置信度: {confidence:.2f})")
+                # Calculate center point
+                center_x = sum(p[0] for p in bbox) / 4
+                center_y = sum(p[1] for p in bbox) / 4
+                texts.append((text, confidence, center_x, center_y))
             
             if texts:
-                result += "\n\nOCR 识别结果:\n" + "\n".join(texts)
+                # Format output as a table
+                result += "\n\nOCR 识别结果:\n"
+                result += f"{'文字':<30} {'置信度':<10} {'位置(x, y)':<15}\n"
+                result += "-" * 55 + "\n"
+                for text, confidence, x, y in texts:
+                    # Truncate text if too long
+                    display_text = text[:28] + ".." if len(text) > 30 else text
+                    result += f"{display_text:<30} {confidence:<10.2f} ({x:.0f}, {y:.0f})\n"
             else:
                 result += "\n\nOCR 识别结果: 未检测到文字"
         except ImportError:
