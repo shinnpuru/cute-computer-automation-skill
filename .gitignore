@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+ENV/
+build/
+dist/
+*.egg-info/
+.eggs/
+.cute_skill_state.json
+screenshots/
+uv.lock

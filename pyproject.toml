@@ -1,0 +1,22 @@
+[project]
+name = "cute_mcp"
+version = "0.1.0"
+description = "Claude Agent Skill for local and Android GUI automation"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "pyautogui",
+    "adbutils",
+    "pillow",
+    "uiautomator2",
+    "uiautomation; sys_platform == 'win32'",
+    "atomacos; sys_platform == 'darwin'",
+    "dogtail; sys_platform == 'linux'",
+]
+
+[tool.uv]
+package = false
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
