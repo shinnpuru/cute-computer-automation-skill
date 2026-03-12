@@ -159,7 +159,16 @@ def run_app(app_id: str) -> str:
         return f"ADB: started {app_id}"
 
     if sys.platform == "win32":
-        os.startfile(app_id)
+        # Support both traditional apps and Windows Store (UWP) apps
+        if "!" in app_id or app_id.startswith("Microsoft."):
+            # Windows Store app (UWP) - use PowerShell to launch
+            subprocess.run(
+                ["powershell", "-Command", f"Start-Process \"shell:AppsFolder\\{app_id}\""],
+                check=True
+            )
+        else:
+            # Traditional app
+            os.startfile(app_id)
         return f"Windows: started {app_id}"
 
     if sys.platform == "darwin":
