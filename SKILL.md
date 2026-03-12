@@ -35,8 +35,8 @@ This directory is a Claude Agent Skill. It replaces the old FastMCP server with 
 
 1. For Android work, run `adb_list_devices.py` first, then `select_device.py --serial <serial>`.
 2. For local work, run `select_device.py --serial local` first.
-3. Use `get_a11y_tree.py` before guessing coordinates.
-4. If the tree is not enough, use `take_screenshot.py` to inspect the current screen.
+3. **ALWAYS use `get_a11y_tree.py` first** to inspect the UI state. This is the primary method for understanding the screen.
+4. **Only use `take_screenshot.py` when explicitly requested by the user.** Do not take screenshots automatically.
 5. After every UI action, run `wait.py 1` or longer before the next action.
 6. Prefer the smallest action that completes the step, then re-check the state.
 
@@ -97,6 +97,7 @@ When scope is specified, the tree traversal starts from the first matching node 
 
 1. Identify whether the target is local or Android.
 2. Ensure the correct target is selected.
-3. Inspect first with `get_a11y_tree.py`, then `take_screenshot.py` if needed.
-4. Execute the requested action with one of the scripts.
-5. Wait briefly and verify the new state before chaining more actions.
+3. **Always use `get_a11y_tree.py` first** to inspect the current UI state.
+4. **Only take a screenshot with `take_screenshot.py` if the user explicitly asks for it.**
+5. Execute the requested action with one of the scripts.
+6. Wait briefly and verify the new state before chaining more actions.

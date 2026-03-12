@@ -10,25 +10,23 @@ Deploy this repository as an OpenClaw Skill named `cute-automation`, then verify
 
 ## Download source
 
-Download the package from GitHub Releases instead of copying a local repository checkout.
+Clone the repository from GitHub instead of downloading a zip archive.
 
-- Latest release page: `https://github.com/shinnpuru/cute-mcp/releases/latest`
+- Repository: `https://github.com/shinnpuru/cute-mcp.git`
 
 Human workflow:
 
-1. open the latest release page
-2. download the newest release zip asset or source zip
-3. extract it into a temporary directory
+1. git clone the repository
+2. navigate into the cloned directory
 
 Agent workflow:
 
-1. resolve `https://github.com/shinnpuru/cute-mcp/releases/latest`
-2. download the newest release archive
-3. extract it into a temporary working directory
+1. git clone `https://github.com/shinnpuru/cute-mcp.git` into a temporary working directory
+2. navigate into the cloned directory
 
 Expected result:
 
-- the extracted directory contains `SKILL.md`, `skill_runtime.py`, `scripts/`, and `pyproject.toml`
+- the cloned directory contains `SKILL.md`, `skill_runtime.py`, `scripts/`, and `pyproject.toml`
 
 ## Skill contents
 
@@ -80,7 +78,7 @@ Use this when the skill should be available only inside one repository.
 
 ## Deployment procedure
 
-### Step 1: Copy extracted files into the skill directory
+### Step 1: Clone the repository into the skill directory
 
 Requirement:
 
@@ -99,37 +97,29 @@ Correct result:
 Windows example for personal install:
 
 ```powershell
-$source = "<extracted-release-directory>"
 $target = Join-Path $HOME ".openclaw/skills/cute-automation"
-New-Item -ItemType Directory -Force -Path $target | Out-Null
-Copy-Item -Path "$source\*" -Destination $target -Recurse -Force
+git clone https://github.com/shinnpuru/cute-mcp.git "$target"
 ```
 
 Unix example for personal install:
 
 ```bash
-source_dir="<extracted-release-directory>"
 target_dir="$HOME/.openclaw/skills/cute-automation"
-mkdir -p "$target_dir"
-cp -R "$source_dir"/* "$target_dir"/
+git clone https://github.com/shinnpuru/cute-mcp.git "$target_dir"
 ```
 
 Project-local example:
 
 ```powershell
-$source = "<extracted-release-directory>"
 $target = "<repo>\.openclaw\skills\cute-automation"
-New-Item -ItemType Directory -Force -Path $target | Out-Null
-Copy-Item -Path "$source\*" -Destination $target -Recurse -Force
+git clone https://github.com/shinnpuru/cute-mcp.git "$target"
 ```
 
 Unix project-local example:
 
 ```bash
-source_dir="<extracted-release-directory>"
 target_dir="<repo>/.openclaw/skills/cute-automation"
-mkdir -p "$target_dir"
-cp -R "$source_dir"/* "$target_dir"/
+git clone https://github.com/shinnpuru/cute-mcp.git "$target_dir"
 ```
 
 ### Step 2: Install Python dependencies
@@ -240,18 +230,38 @@ uv --directory "${OPENCLAW_SKILL_DIR}" run python "${OPENCLAW_SKILL_DIR}/scripts
 
 An agent can follow this checklist exactly:
 
-1. open the latest release page
-2. download the newest release archive
-3. extract it to a temporary directory
-4. choose install scope: personal or project
-5. create target directory named `cute-automation`
-6. copy extracted files into that directory
-7. ensure `SKILL.md` is at the copied root
-8. run `uv sync` in the copied directory
-9. run `uv run python scripts/select_device.py --serial local`
-10. run `uv run python scripts/wait.py 0`
-11. confirm expected outputs appear
-12. start OpenClaw and verify `/cute-automation` is available
+1. choose install scope: personal or project
+2. git clone `https://github.com/shinnpuru/cute-mcp.git` into target directory named `cute-automation`
+3. ensure `SKILL.md` is at the cloned root
+4. run `uv sync` in the cloned directory
+5. run `uv run python scripts/select_device.py --serial local`
+6. run `uv run python scripts/wait.py 0`
+7. confirm expected outputs appear
+8. start OpenClaw and verify `/cute-automation` is available
+
+## Update
+
+To update the skill to the latest version:
+
+1. navigate to the skill directory
+2. run `git pull` to fetch the latest changes
+3. run `uv sync` to update dependencies if needed
+
+Windows PowerShell example:
+
+```powershell
+cd "$HOME\.openclaw\skills\cute-automation"
+git pull
+uv sync
+```
+
+Unix example:
+
+```bash
+cd "$HOME/.openclaw/skills/cute-automation"
+git pull
+uv sync
+```
 
 ## Notes
 
